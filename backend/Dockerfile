@@ -5,7 +5,7 @@ WORKDIR /backend
 
 COPY pyproject.toml .
 COPY uv.lock .
-RUN uv sync --locked --no-dev
+RUN uv sync --frozen --no-dev
 
 
 FROM python:3.14 AS final
