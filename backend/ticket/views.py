@@ -62,13 +62,13 @@ class StaffTicketsViewSet(mixins.RetrieveModelMixin,
     queryset = Ticket.objects.all()
     serializer_class = TicketSerializer
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['get'], detail=False)
     def get_pending_tickets(self, request):
         pending_tickets = self.get_queryset().filter(status=TicketStatus.CREATED)
         serializer = self.get_serializer(pending_tickets, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(methods=['post'], detail=False)
+    @action(methods=['get'], detail=False)
     def get_active_tickets(self, request):
         active_tickets = self.get_queryset().filter(processed_by=request.user)
         serializer = self.get_serializer(active_tickets, many=True)
