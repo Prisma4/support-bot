@@ -72,7 +72,7 @@ class StaffTicketsViewSet(mixins.RetrieveModelMixin,
 
     @action(methods=['get'], detail=False)
     def get_active_tickets(self, request):
-        active_tickets = self.get_queryset().filter(processed_by=request.user)
+        active_tickets = self.get_queryset().filter(processed_by=request.user).exclude(status=TicketStatus.CLOSED)
         serializer = self.get_serializer(active_tickets, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
