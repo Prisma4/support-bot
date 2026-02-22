@@ -6,6 +6,7 @@ from user.serializers import UserSerializer
 
 class TicketSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    processed_by = serializers.ListField(child=UserSerializer(), read_only=True)
 
     class Meta:
         model = Ticket
@@ -24,6 +25,17 @@ class TicketCreateSerializer(serializers.ModelSerializer):
             "user",
             "name",
         )
+        read_only_fields = (
+            "user",
+        )
+
+
+class TicketMessageSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = TicketMessage
+        fields = '__all__'
         read_only_fields = (
             "user",
         )
@@ -52,14 +64,3 @@ class TicketMessageCreateSerializer(serializers.ModelSerializer):
                     {"ticket": "This ticket is already closed."}
                 )
         return attrs
-
-
-class TicketMessageSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-
-    class Meta:
-        model = TicketMessage
-        fields = '__all__'
-        read_only_fields = (
-            "user",
-        )
