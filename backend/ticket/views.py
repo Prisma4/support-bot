@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -27,9 +28,10 @@ class TicketsViewSet(mixins.ListModelMixin,
 
         return Response(self.get_serializer(obj).data, status=status.HTTP_201_CREATED)
 
+    @extend_schema(request=None, responses={204: None})
     @action(methods=['post'], detail=True)
     def close_ticket(self, request, pk: int):
-        obj = get_object_or_404(Ticket, pk=pk)
+        obj = get_object_or_404(self.queryset, pk=pk)
         obj.status = TicketStatus.CLOSED
         obj.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
