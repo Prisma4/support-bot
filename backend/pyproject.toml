@@ -1,0 +1,13 @@
+[project]
+name = "support-bot-backend"
+version = "0.1.0"
+description = "A simple support bot backend on Django"
+requires-python = ">=3.14"
+dependencies = [
+    "Django==5.2.11",
+    "djangorestframework==3.16.1",
+    "django-filter==25.2",
+    "uvicorn==0.40.0",
+    "psycopg2-binary==2.9.11",
+    "drf-spectacular==0.27.2",
+]
