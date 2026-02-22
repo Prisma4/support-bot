@@ -10,8 +10,8 @@ router.register('ticket_messages', views.TicketMessagesViewSet, basename='ticket
 
 staff_router = DefaultRouter()
 
-router.register('tickets', views.StaffTicketsViewSet, basename='staff_tickets')
-router.register('ticket_messages', views.StaffTicketMessagesViewSet, basename='staff_ticket_messages')
+router.register('staff_tickets', views.StaffTicketsViewSet, basename='staff_tickets')
+router.register('staff_ticket_messages', views.StaffTicketMessagesViewSet, basename='staff_ticket_messages')
 
 urlpatterns = [
     path('', include(router.urls), name='ticket'),
