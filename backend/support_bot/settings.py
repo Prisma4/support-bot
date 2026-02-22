@@ -156,6 +156,7 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Celery
 
