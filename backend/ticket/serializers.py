@@ -55,3 +55,6 @@ class TicketMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = TicketMessage
         fields = '__all__'
+        read_only_fields = (
+            "user"
+        )
