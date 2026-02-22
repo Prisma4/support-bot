@@ -18,7 +18,7 @@ class TicketsViewSet(mixins.ListModelMixin,
 
     def get_queryset(self):
         user = self.request.user
-        return Ticket.objects.filter(user=user)
+        return Ticket.objects.filter(user=user).select_related('user').prefetch_related('processed_by')
 
     def create(self, request):
         serializer = TicketCreateSerializer(data=request.data)
@@ -44,7 +44,7 @@ class TicketMessagesViewSet(mixins.ListModelMixin,
 
     def get_queryset(self):
         user = self.request.user
-        return TicketMessage.objects.filter(user=user)
+        return TicketMessage.objects.filter(user=user).select_related('user')
 
     def create(self, request):
         serializer = TicketMessageCreateSerializer(data=request.data)
@@ -61,7 +61,7 @@ class StaffTicketsViewSet(mixins.RetrieveModelMixin,
                           GenericViewSet):
     permission_classes = [IsAdminUser, ]
 
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.all().select_related('user').prefetch_related('processed_by')
     serializer_class = TicketSerializer
 
     @action(methods=['get'], detail=False)
@@ -83,7 +83,7 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
                                  GenericViewSet):
     permission_classes = [IsAdminUser, ]
 
-    queryset = TicketMessage.objects.all()
+    queryset = TicketMessage.objects.all().select_related('user')
     serializer_class = TicketMessageSerializer
 
     def create(self, request):

@@ -1,9 +1,12 @@
 from rest_framework import serializers
 
 from ticket.models import Ticket, TicketMessage, TicketStatus
+from user.serializers import UserSerializer
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Ticket
         fields = '__all__'
