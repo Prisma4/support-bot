@@ -6,7 +6,7 @@ from user.serializers import UserSerializer
 
 class TicketSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    processed_by = serializers.ListField(child=UserSerializer(), read_only=True)
+    processed_by = UserSerializer(read_only=True, many=True)
 
     class Meta:
         model = Ticket
