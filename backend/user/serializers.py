@@ -14,5 +14,5 @@ class UserSerializer(serializers.ModelSerializer):
             "auth_source"
         )
         read_only_fields = (
-            "id"
+            "id",
         )
