@@ -20,7 +20,6 @@ services:
     entrypoint: ["sh", "-c", "python manage.py migrate && uvicorn support_bot.asgi:application --host 0.0.0.0 --port 8000"]
     depends_on:
       - postgres_db
-      - redis
     environment:
       <<: [*backend_env]
     ports:
