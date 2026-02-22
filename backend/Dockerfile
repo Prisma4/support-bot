@@ -5,9 +5,9 @@ WORKDIR /backend
 RUN pip install --upgrade pip && \
     pip install uv
 
-COPY requirements.txt ./
+COPY pyproject.toml uv.lock ./
 
-RUN uv install
+RUN uv sync
 
 FROM python:3.14 AS final
 
@@ -17,4 +17,4 @@ COPY --from=builder /backend /backend
 
 COPY . .
 
-RUN uv install
+RUN uv sync
