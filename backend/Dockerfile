@@ -12,8 +12,7 @@ FROM python:3.14 AS final
 
 WORKDIR /backend
 
-COPY --from=builder /backend/.venv /backend/.venv
-COPY ./__init__.py .
-COPY ./src ./src
+COPY --from=builder /backend /backend
+COPY . .
 
 ENV PATH="/backend/.venv/bin:$PATH"
