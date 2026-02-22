@@ -16,5 +16,3 @@ WORKDIR /backend
 COPY --from=builder /backend /backend
 
 COPY . .
-
-RUN uv sync

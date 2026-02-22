@@ -21,7 +21,7 @@ services:
     depends_on:
       - postgres_db
     environment:
-      <<: [*backend_env]
+      <<: *backend_env
     ports:
       - "8000:8000"
 
