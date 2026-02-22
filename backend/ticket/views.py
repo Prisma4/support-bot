@@ -31,7 +31,7 @@ class TicketsViewSet(mixins.ListModelMixin,
     @extend_schema(request=None, responses={204: None})
     @action(methods=['post'], detail=True)
     def close_ticket(self, request, pk: int):
-        obj = get_object_or_404(self.queryset, pk=pk)
+        obj = get_object_or_404(self.get_queryset(), pk=pk)
         obj.status = TicketStatus.CLOSED
         obj.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
