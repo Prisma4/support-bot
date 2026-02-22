@@ -92,7 +92,7 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
 
         ticket: Ticket = obj.ticket
         ticket.status = TicketStatus.IN_PROGRESS
-        ticket.processed_by += request.user
+        ticket.processed_by.add(request.user)
         ticket.save()
 
         return Response(self.get_serializer(obj).data, status=status.HTTP_201_CREATED)
