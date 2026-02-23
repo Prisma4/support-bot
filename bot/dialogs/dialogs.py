@@ -48,7 +48,6 @@ ticket_list_window = Window(
                     texts={
                         True: Const('⚙️'),
                         False: Const('🔒'),
-                        ...: Const('🔒'),
                     },
                     selector="item[is_open]",
                 ),
