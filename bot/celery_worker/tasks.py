@@ -17,7 +17,7 @@ _bot: Bot | None = None
 def get_bot() -> Bot:
     global _bot
     if _bot is None:
-        _bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
+        _bot = Bot(token=settings.bot_token)
         logger.info("Telegram Bot initialized in Celery worker")
     return _bot
 
