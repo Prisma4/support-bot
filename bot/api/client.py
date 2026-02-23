@@ -31,7 +31,7 @@ client.register_endpoint(
 client.register_endpoint(
     name="get_tickets",
     path="tickets/tickets/{id}",
-    query_validator=PageQuery,
+    query_validator=RetrieveQuery,
     response_validator=PaginatedTickets,
     method="GET"
 )
