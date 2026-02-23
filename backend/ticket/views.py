@@ -37,14 +37,25 @@ class TicketsViewSet(mixins.ListModelMixin,
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TicketMessagesViewSet(mixins.ListModelMixin,
-                            GenericViewSet):
+class TicketMessagesViewSet(GenericViewSet):
     permission_classes = [IsAuthenticated, ]
     serializer_class = TicketMessageSerializer
 
     def get_queryset(self):
         user = self.request.user
         return TicketMessage.objects.filter(user=user).select_related('user')
+
+    @action(methods=['post'], detail=True)
+    def list_messages_for_ticket(self, request, pk: int):
+        queryset = self.filter_queryset(self.get_queryset()).filter(ticket_id=pk)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         serializer = TicketMessageCreateSerializer(data=request.data)
@@ -85,6 +96,18 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
 
     queryset = TicketMessage.objects.all().select_related('user')
     serializer_class = TicketMessageSerializer
+
+    @action(methods=['post'], detail=True)
+    def list_messages_for_ticket(self, request, pk: int):
+        queryset = self.filter_queryset(self.get_queryset()).filter(ticket_id=pk)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         serializer = TicketMessageCreateSerializer(data=request.data)

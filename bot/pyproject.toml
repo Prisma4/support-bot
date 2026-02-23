@@ -1,0 +1,14 @@
+[project]
+name = "support-bot-aiogram"
+version = "0.1.0"
+description = "A simple support bot backend on aiogram"
+requires-python = ">=3.14"
+dependencies = [
+    "aiogram==3.25.0",
+    "aiogram-dialog==2.4.0",
+    "pydantic-settings==2.5.2",
+    "httpx==0.28.1",
+    "pydantic==2.12.5",
+    "celery==5.6.2",
+    "redis==7.1.1",
+]
