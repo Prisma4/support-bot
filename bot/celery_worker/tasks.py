@@ -1,16 +1,22 @@
 import asyncio
+import logging
 
 from celery import shared_task
 from celery_worker.app import bot
 
 
+logger = logging.getLogger(__name__)
+
+
 @shared_task(name="bot.send_message")
-def send_message(user_id: int, text: str):
-    loop = asyncio.get_event_loop()
+def send_message(telegram_id, message):
+    try:
+        asyncio.run(send_telegram_message(telegram_id, message))
+    except Exception as e:
+        logger.error(f"Error in send_message: {e}")
+        raise
 
-    if loop.is_closed():
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
 
-    coro = bot.send_message(chat_id=user_id, text=text)
-    loop.run_until_complete(coro)
+async def send_telegram_message(telegram_id, message):
+    await bot.send_message(chat_id=telegram_id, text=message)
+    logger.info(f"Message sent to {telegram_id}: {message}")
