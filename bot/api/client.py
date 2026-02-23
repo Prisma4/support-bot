@@ -30,8 +30,8 @@ client.register_endpoint(
 )
 client.register_endpoint(
     name="get_tickets",
-    path="tickets/tickets/{id}",
-    query_validator=RetrieveQuery,
+    path="tickets/tickets/",
+    query_validator=PageQuery,
     response_validator=PaginatedTickets,
     method="GET"
 )
@@ -44,10 +44,10 @@ client.register_endpoint(
 )
 client.register_endpoint(
     name="get_ticket",
-    path="tickets/tickets/",
+    path="tickets/tickets/{id}",
     query_validator=RetrieveQuery,
     response_validator=Ticket,
-    method="POST"
+    method="GET"
 )
 client.register_endpoint(
     name="close_ticket",

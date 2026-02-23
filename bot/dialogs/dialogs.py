@@ -54,7 +54,7 @@ new_ticket_window = Window(
         id="new_ticket",
         on_success=create_new_ticket,
     ),
-    Button(Const(Texts.BACK), id="back", on_click=switch_state_to_tickets_list),
+    Button(Const(Texts.BACK), id="back", on_click=switch_state_to_main),
     state=BotStates.NEW_TICKET,
 )
 
