@@ -17,8 +17,8 @@ class PaginatedRetrieveQuery(PageQuery, RetrieveQuery):
 
 class PaginatedPage(BaseModel):
     count: int
-    next: int
-    previous: int
+    next: Optional[int] = None
+    previous: Optional[int] = None
 
 
 class User(BaseModel):
