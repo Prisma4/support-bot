@@ -4,12 +4,22 @@ x-db-env: &db_env
   POSTGRES_PASSWORD: $PSQL_PASS
 
 x-backend-env: &backend_env
-   <<: *db_env
-   DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
-   DJANGO_ALLOWED_HOSTS: $DJANGO_ALLOWED_HOSTS
-   DJANGO_DEBUG: $DJANGO_DEBUG
-   POSTGRES_HOST: postgres_db
-   POSTGRES_PORT: $PSQL_PORT
+  <<: *db_env
+  DJANGO_SECRET_KEY: $DJANGO_SECRET_KEY
+  DJANGO_ALLOWED_HOSTS: $DJANGO_ALLOWED_HOSTS
+  DJANGO_DEBUG: $DJANGO_DEBUG
+  POSTGRES_HOST: postgres_db
+  POSTGRES_PORT: $PSQL_PORT
+  TELEGRAM_BOT_API_TOKEN: $TELEGRAM_BOT_API_TOKEN
+
+x-bot-env: &bot_env
+  BOT_TOKEN: $BOT_TOKEN
+  BASE_API_URL: $BASE_API_URL
+  BOT_API_TOKEN: $TELEGRAM_BOT_API_TOKEN
+
+x-celery-env: &celery_env
+  CELERY_BROKER_URL: $CELERY_BROKER_URL
+  CELERY_RESULT_BACKEND: $CELERY_RESULT_BACKEND
 
 services:
   backend:
@@ -17,13 +27,39 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    entrypoint: ["sh", "-c", "python manage.py migrate && uvicorn support_bot.asgi:application --host 0.0.0.0 --port 8000"]
+    entrypoint: [ "sh", "-c", "python manage.py migrate && uvicorn support_bot.asgi:application --host 0.0.0.0 --port 8000" ]
     depends_on:
       - postgres_db
     environment:
-      <<: *backend_env
+      <<: [ *backend_env, *celery_env ]
     ports:
       - "8000:8000"
+
+  bot:
+    restart: always
+    entrypoint: [ "sh", "-c", "python main.py" ]
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    environment:
+      <<: *bot_env
+    depends_on:
+      - backend
+
+  bot_celery_worker:
+    restart: always
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    entrypoint: [ "sh", "-c", "celery -A celery_worker.app worker --loglevel=info --concurrency 1 -E" ]
+    depends_on:
+      - backend
+    environment:
+      <<: [ *bot_env, *celery_env ]
+
+  redis:
+    restart: always
+    image: eqalpha/keydb
 
   postgres_db:
     restart: always

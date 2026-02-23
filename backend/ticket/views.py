@@ -1,3 +1,5 @@
+import logging
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -6,19 +8,26 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from support_bot.celery import app
 from ticket.models import Ticket, TicketMessage, TicketStatus
 from ticket.serializers import TicketSerializer, TicketMessageSerializer, TicketCreateSerializer, \
     TicketMessageCreateSerializer
+from user.models import AuthSource
+
+
+logger = logging.getLogger(__name__)
 
 
 class TicketsViewSet(mixins.ListModelMixin,
+                     mixins.RetrieveModelMixin,
                      GenericViewSet):
     permission_classes = [IsAuthenticated, ]
     serializer_class = TicketSerializer
 
     def get_queryset(self):
         user = self.request.user
-        return Ticket.objects.filter(user=user)
+        return Ticket.objects.filter(user=user).select_related('user').prefetch_related('processed_by').order_by(
+            '-created_at')
 
     def create(self, request):
         serializer = TicketCreateSerializer(data=request.data)
@@ -37,14 +46,24 @@ class TicketsViewSet(mixins.ListModelMixin,
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TicketMessagesViewSet(mixins.ListModelMixin,
-                            GenericViewSet):
+class TicketMessagesViewSet(GenericViewSet):
     permission_classes = [IsAuthenticated, ]
     serializer_class = TicketMessageSerializer
 
     def get_queryset(self):
-        user = self.request.user
-        return TicketMessage.objects.filter(user=user)
+        return TicketMessage.objects.filter().select_related('user').order_by('-created_at')
+
+    @action(methods=['get'], detail=True)
+    def list_messages_for_ticket(self, request, pk: int):
+        queryset = self.filter_queryset(self.get_queryset()).filter(ticket_id=pk)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         serializer = TicketMessageCreateSerializer(data=request.data)
@@ -61,7 +80,7 @@ class StaffTicketsViewSet(mixins.RetrieveModelMixin,
                           GenericViewSet):
     permission_classes = [IsAdminUser, ]
 
-    queryset = Ticket.objects.all()
+    queryset = Ticket.objects.all().select_related('user').prefetch_related('processed_by').order_by('-created_at')
     serializer_class = TicketSerializer
 
     @action(methods=['get'], detail=False)
@@ -83,8 +102,20 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
                                  GenericViewSet):
     permission_classes = [IsAdminUser, ]
 
-    queryset = TicketMessage.objects.all()
+    queryset = TicketMessage.objects.all().select_related('user').order_by('-created_at')
     serializer_class = TicketMessageSerializer
+
+    @action(methods=['get'], detail=True)
+    def list_messages_for_ticket(self, request, pk: int):
+        queryset = self.filter_queryset(self.get_queryset()).filter(ticket_id=pk)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def create(self, request):
         serializer = TicketMessageCreateSerializer(data=request.data)
@@ -96,5 +127,11 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
         ticket.status = TicketStatus.IN_PROGRESS
         ticket.processed_by.add(request.user)
         ticket.save()
+
+        telegram_user_id = ticket.user.telegram_user_id
+        if telegram_user_id and ticket.user.auth_source == AuthSource.TELEGRAM:
+            logger.info("Trying to send message to telegram user with id: {}".format(telegram_user_id))
+            ticket_name = ticket.name
+            app.send_task("bot.send_message", args=[telegram_user_id, f"You have a new answer in ticket {ticket_name}"])
 
         return Response(self.get_serializer(obj).data, status=status.HTTP_201_CREATED)

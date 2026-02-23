@@ -1,0 +1,72 @@
+from typing import Optional, List
+
+from pydantic import BaseModel
+
+
+class PageQuery(BaseModel):
+    page: Optional[int] = None
+
+
+class RetrieveQuery(BaseModel):
+    pk: int
+
+
+class PaginatedRetrieveQuery(PageQuery, RetrieveQuery):
+    pass
+
+
+class PaginatedPage(BaseModel):
+    count: int
+    max_pages: int
+    next: Optional[int] = None
+    previous: Optional[int] = None
+
+
+class User(BaseModel):
+    id: int
+    username: str
+    telegram_user_id: Optional[int]
+    auth_source: str
+    is_tg_auth: bool
+
+
+class TicketMessage(BaseModel):
+    id: int
+    user: User
+    text: str
+    ticket: int
+
+    created_at: str
+
+
+class PaginatedTicketMessages(PaginatedPage):
+    results: List[TicketMessage]
+
+
+class Ticket(BaseModel):
+    id: int
+    user: User
+    processed_by: List[User]
+    name: str
+    status: int
+    is_open: bool
+
+    created_at: str
+    updated_at: str
+
+
+class PaginatedTickets(PaginatedPage):
+    results: List[Ticket]
+
+
+class CreateTicketMessage(BaseModel):
+    text: str
+    ticket: int
+
+
+class CreateTicket(BaseModel):
+    name: str
+
+
+class CreatedObject(BaseModel):
+    id: int
