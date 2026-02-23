@@ -51,8 +51,7 @@ class TicketMessagesViewSet(GenericViewSet):
     serializer_class = TicketMessageSerializer
 
     def get_queryset(self):
-        user = self.request.user
-        return TicketMessage.objects.filter(user=user).select_related('user').order_by('-created_at')
+        return TicketMessage.objects.filter().select_related('user').order_by('-created_at')
 
     @action(methods=['get'], detail=True)
     def list_messages_for_ticket(self, request, pk: int):
