@@ -25,7 +25,7 @@ class PaginatedPage(BaseModel):
 class User(BaseModel):
     id: int
     username: str
-    telegram_user_id: int
+    telegram_user_id: Optional[int]
     auth_source: str
     is_tg_auth: bool
 
