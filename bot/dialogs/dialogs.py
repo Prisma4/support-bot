@@ -22,10 +22,11 @@ start_window = Window(
 
 def create_pager(
         prefix: str,
+        affix: Optional[str] = None,
         previous_field: Optional[str] = "has_prev",
         next_field: [str] = "has_next"
 ):
-    on_prev, on_next = create_pagination_handlers(prefix)
+    on_prev, on_next = create_pagination_handlers(prefix, affix)
 
     pager = Row(
         Button(Format(Texts.PREV), id="prev", on_click=on_prev, when=previous_field),
@@ -83,7 +84,7 @@ view_ticket_window = Window(
         f"{{messages}}\n"
         f"{Texts.PAGE}: {{page}}/{{pages}}\n"
     ),
-    create_pager("ticket_view"),
+    create_pager("ticket_view", "ticket_id"),
     Button(Const(Texts.CLOSE_TICKET), id="close_ticket", on_click=close_ticket, when="is_open"),
     Button(Const(Texts.NEW_MESSAGE), id="new_message", on_click=switch_state_to_new_message, when="is_open"),
     Button(Const(Texts.BACK), id="back", on_click=switch_state_to_tickets_list),
