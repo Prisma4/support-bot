@@ -42,7 +42,7 @@ ticket_list_window = Window(
     ),
     Column(
         Select(
-            text=Format("{ '⚙️' if item.get('is_open') else '🔒' }  {item[title]}"),
+            text=Format("{'⚙️' if item.get('is_open') else '🔒'} {item[title]}"),
             id="ticket_select",
             items="tickets",
             item_id_getter=lambda item: str(item["id"]),
