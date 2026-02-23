@@ -33,4 +33,4 @@ class TicketMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user}: {self.text[:10]}"
+        return f"{self.created_at}: {self.user}"

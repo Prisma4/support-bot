@@ -1,3 +1,5 @@
+import logging
+
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -11,6 +13,9 @@ from ticket.models import Ticket, TicketMessage, TicketStatus
 from ticket.serializers import TicketSerializer, TicketMessageSerializer, TicketCreateSerializer, \
     TicketMessageCreateSerializer
 from user.models import AuthSource
+
+
+logger = logging.getLogger(__name__)
 
 
 class TicketsViewSet(mixins.ListModelMixin,
@@ -124,9 +129,10 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
         ticket.processed_by.add(request.user)
         ticket.save()
 
-        user_telegram_id = obj.user.telegram_user_id
-        if user_telegram_id and obj.user.auth_source == AuthSource.TELEGRAM:
+        telegram_user_id = ticket.user.telegram_user_id
+        if telegram_user_id and ticket.user.auth_source == AuthSource.TELEGRAM:
+            logger.info("Trying to send message to telegram user with id: {}".format(telegram_user_id))
             ticket_name = ticket.name
-            app.send_task("bot.send_message", args=[user_telegram_id, f"You have a new answer in ticket {ticket_name}"])
+            app.send_task("bot.send_message", args=[telegram_user_id, f"You have a new answer in ticket {ticket_name}"])
 
         return Response(self.get_serializer(obj).data, status=status.HTTP_201_CREATED)
