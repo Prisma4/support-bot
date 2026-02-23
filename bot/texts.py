@@ -8,6 +8,7 @@ class Texts:
     BACK = "Back"
     NEW_MESSAGE = "New message"
     ENTER_MESSAGE_TEXT = "Enter message text"
+    CLOSE_TICKET = "Close ticket"
 
     TICKETS_TITLE = "Tickets"
     TOTAL = "Total"

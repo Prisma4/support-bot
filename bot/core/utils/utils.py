@@ -7,7 +7,7 @@ def parse_date(s: str) -> str | None:
 
         today = datetime.today()
 
-        if dt.date() == today:
+        if dt.date() == today.date():
             return dt.strftime('%H:%M')
 
         return dt.strftime("%d.%m.%y")

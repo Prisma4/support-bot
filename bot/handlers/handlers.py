@@ -32,6 +32,15 @@ async def switch_state_to_view_ticket(callback: CallbackQuery, button: Button, m
     await manager.switch_to(BotStates.TICKET)
 
 
+async def close_ticket(_: Any, __: Any, manager: DialogManager):
+    user_id = manager.event.from_user.id
+    ticket_id = manager.dialog_data["ticket_id"]
+
+    response = await bot_api.close_ticket(user_id, ticket_id)
+
+    await manager.switch_to(BotStates.TICKETS_LIST)
+
+
 async def create_new_ticket(_: Any, __: Any, manager: DialogManager, ticket_name: str):
     ticket_name = ticket_name.strip()
     user_id = manager.event.from_user.id
@@ -88,7 +97,7 @@ async def tickets_getter(dialog_manager: DialogManager, **_):
         "count": api_page.count,
         "has_prev": api_page.previous is not None,
         "has_next": api_page.next is not None,
-        "tickets": [{"id": t.id, "title": t.name} for t in api_page.results],
+        "tickets": [{"id": t.id, "title": t.name, "is_open": t.is_open} for t in api_page.results],
     }
 
 
@@ -103,10 +112,8 @@ async def ticket_messages_getter(dialog_manager: DialogManager, **_):
 
     user_name = dialog_manager.event.from_user.username
 
-    space = " " * 42
-
     messages = [
-        f"{message.user.username if not message.user.telegram_user_id == user_id else f'@{user_name}'}{space}{parse_date(message.created_at)}\n"
+        f"{message.user.username if not message.user.telegram_user_id == user_id else f'@{user_name}'} | {parse_date(message.created_at)}\n"
         f"{message.text}\n"
         for message in messages_api_page.results
     ]
