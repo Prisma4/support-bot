@@ -17,7 +17,7 @@ client = ApiClient(
 
 client.register_endpoint(
     name="get_ticket_messages",
-    path="tickets/ticket_messages/list_messages_for_ticket/",
+    path="tickets/ticket_messages/{id}/list_messages_for_ticket/",
     query_validator=PaginatedRetrieveQuery,
     response_validator=PaginatedTicketMessages,
     method="GET"

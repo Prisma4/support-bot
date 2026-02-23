@@ -19,7 +19,8 @@ class TicketsViewSet(mixins.ListModelMixin,
 
     def get_queryset(self):
         user = self.request.user
-        return Ticket.objects.filter(user=user).select_related('user').prefetch_related('processed_by')
+        return Ticket.objects.filter(user=user).select_related('user').prefetch_related('processed_by').order_by(
+            '-created_at')
 
     def create(self, request):
         serializer = TicketCreateSerializer(data=request.data)
@@ -44,7 +45,7 @@ class TicketMessagesViewSet(GenericViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return TicketMessage.objects.filter(user=user).select_related('user')
+        return TicketMessage.objects.filter(user=user).select_related('user').order_by('-created_at')
 
     @action(methods=['post'], detail=True)
     def list_messages_for_ticket(self, request, pk: int):
@@ -73,7 +74,7 @@ class StaffTicketsViewSet(mixins.RetrieveModelMixin,
                           GenericViewSet):
     permission_classes = [IsAdminUser, ]
 
-    queryset = Ticket.objects.all().select_related('user').prefetch_related('processed_by')
+    queryset = Ticket.objects.all().select_related('user').prefetch_related('processed_by').order_by('-created_at')
     serializer_class = TicketSerializer
 
     @action(methods=['get'], detail=False)
@@ -95,7 +96,7 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
                                  GenericViewSet):
     permission_classes = [IsAdminUser, ]
 
-    queryset = TicketMessage.objects.all().select_related('user')
+    queryset = TicketMessage.objects.all().select_related('user').order_by('-created_at')
     serializer_class = TicketMessageSerializer
 
     @action(methods=['post'], detail=True)
