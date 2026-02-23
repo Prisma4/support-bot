@@ -3,7 +3,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram_dialog import setup_dialogs
 
-from dialogs.tasks import main_dialog
+from dialogs.dialogs import dialog
 from handlers import start
 from settings import Settings
 
@@ -16,7 +16,7 @@ bot = Bot(token=settings.bot_token)
 dp = Dispatcher()
 setup_dialogs(dp)
 
-dp.include_router(main_dialog)
+dp.include_router(dialog)
 dp.include_router(start.router)
 
 
