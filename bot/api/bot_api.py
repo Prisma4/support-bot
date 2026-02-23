@@ -1,6 +1,3 @@
-from asyncio import coroutine
-
-
 class BotApi:
     def __init__(self, client):
         self.client = client
@@ -17,7 +14,7 @@ class BotApi:
 
         return headers
 
-    async def _get_client_method(self, method: str) -> coroutine:
+    async def _get_client_method(self, method: str) -> callable:
         method = getattr(self.client, method)
         assert callable(method), "Client has not implemented method {}".format(method)
         return method
