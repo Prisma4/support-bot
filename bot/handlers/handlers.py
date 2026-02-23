@@ -35,18 +35,18 @@ async def tickets_getter(dialog_manager: DialogManager, **_):
 
     user_id = dialog_manager.event.from_user.id
 
-    page = await bot_api.get_tickets(user_id, page)
+    api_page = await bot_api.get_tickets(user_id, page)
 
-    dialog_manager.dialog_data["prev_page"] = page.previous
-    dialog_manager.dialog_data["next_page"] = page.next
+    dialog_manager.dialog_data["prev_page"] = api_page.previous
+    dialog_manager.dialog_data["next_page"] = api_page.next
 
-    pages = max(1, (page.count + PAGE_SIZE - 1) // PAGE_SIZE)
+    pages = max(1, (api_page.count + PAGE_SIZE - 1) // PAGE_SIZE)
 
     return {
         "page": page,
         "pages": pages,
-        "count": page.count,
-        "has_prev": page.previous is not None,
-        "has_next": page.next is not None,
-        "tickets": [{"id": t.id, "title": t.name} for t in page.results],
+        "count": api_page.count,
+        "has_prev": api_page.previous is not None,
+        "has_next": api_page.next is not None,
+        "tickets": [{"id": t.id, "title": t.name} for t in api_page.results],
     }
