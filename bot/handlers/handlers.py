@@ -35,7 +35,7 @@ async def tickets_getter(dialog_manager: DialogManager, **_):
 
     user_id = dialog_manager.event.from_user.id
 
-    page = bot_api.get_tickets(user_id, page)
+    page = await bot_api.get_tickets(user_id, page)
 
     dialog_manager.dialog_data["prev_page"] = page.previous
     dialog_manager.dialog_data["next_page"] = page.next
