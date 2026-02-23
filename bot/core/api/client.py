@@ -40,12 +40,12 @@ class ApiClient:
                 **kwargs: Any,
         ) -> Any:
             validated_data = endpoint.validate_input_data(body, query_params)
-            query_params = validated_data.get('params')
+            query_params: dict = validated_data.get('params')
 
             path = endpoint.path
 
             if query_params:
-                pk = query_params.pop('pk')
+                pk = query_params.pop('pk', None)
                 if isinstance(pk, int):
                     if "{id}" in path:
                         path = path.replace("{id}", str(pk))
