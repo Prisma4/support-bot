@@ -1,7 +1,7 @@
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup
+from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup, Column
 
 from handlers.handlers import switch_state_to_tickets_list, on_select_ticket, tickets_getter, on_next, on_prev, \
     switch_state_to_new_ticket, create_new_ticket, ticket_messages_getter, switch_state_to_new_message, \
@@ -35,12 +35,8 @@ ticket_list_window = Window(
         f"{Texts.TOTAL}: {{count}}\n"
         f"{Texts.PAGE}: {{page}}/{{pages}}\n"
     ),
-    ScrollingGroup(
+    Column(
         tickets_select,
-        id="tickets_scroll",
-        width=1,
-        height=5,
-        when="tickets",
     ),
     Button(Const(Texts.BACK), id="back", on_click=switch_state_to_main),
     pager,

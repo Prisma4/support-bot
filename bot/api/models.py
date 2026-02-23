@@ -27,6 +27,7 @@ class User(BaseModel):
     username: str
     telegram_user_id: int
     auth_source: str
+    is_tg_auth: bool
 
 
 class TicketMessage(BaseModel):

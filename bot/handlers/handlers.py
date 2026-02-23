@@ -103,7 +103,7 @@ async def ticket_messages_getter(dialog_manager: DialogManager, **_):
     messages_api_page: PaginatedTicketMessages = await bot_api.get_ticket_messages(user_id, ticket_id, page)
 
     messages = [
-        f"`{message.user.username}`   {parse_date(message.created_at)}\n"
+        f"{message.user.username if not message.user.is_tg_auth else f'@{message.user.telegram_user_id}'}   {parse_date(message.created_at)}\n"
         f"{message.text}\n"
         for message in messages_api_page.results
     ]
