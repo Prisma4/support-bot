@@ -1,7 +1,7 @@
 from typing import Any
 
 from aiogram.types import CallbackQuery
-from aiogram_dialog import DialogManager
+from aiogram_dialog import DialogManager, ShowMode
 from aiogram_dialog.widgets.kbd import Button, Select
 
 from api.client import bot_api
@@ -58,14 +58,14 @@ async def on_prev(_: Any, __: Any, manager: DialogManager):
     prev_page = manager.dialog_data.get("prev_page")
     if prev_page:
         manager.dialog_data["page"] = prev_page
-    await manager.show()
+    await manager.show(ShowMode.EDIT)
 
 
 async def on_next(_: Any, __: Any, manager: DialogManager):
     next_page = manager.dialog_data.get("next_page")
     if next_page:
         manager.dialog_data["page"] = next_page
-    await manager.show()
+    await manager.show(ShowMode.EDIT)
 
 
 async def on_select_ticket(_: Any, __: Any, manager: DialogManager, item_id: str):
@@ -105,7 +105,7 @@ async def ticket_messages_getter(dialog_manager: DialogManager, **_):
     user_name = dialog_manager.event.from_user.username
 
     messages = [
-        f"{message.user.username if not message.user.telegram_user_id == user_id else f'@{user_name}'}   {parse_date(message.created_at)}\n"
+        f"{message.user.username if not message.user.telegram_user_id == user_id else f'@{user_name}'}\t\t\t{parse_date(message.created_at)}\n"
         f"{message.text}\n"
         for message in messages_api_page.results
     ]
@@ -121,5 +121,5 @@ async def ticket_messages_getter(dialog_manager: DialogManager, **_):
         "has_next": messages_api_page.next is not None,
         "name": ticket_data.name,
         "is_open": ticket_data.is_open,
-        "messages": "\n".join(messages) or "---"
+        "messages": "\n".join(messages) or "---\n"
     }
