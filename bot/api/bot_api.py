@@ -3,7 +3,7 @@ class BotApi:
         self.client = client
 
     def _form_auth_header_for_user(self, user_id: int):
-        return {"HTTP_X_TELEGRAM_USER_ID": user_id}
+        return {"HTTP_X_TELEGRAM_USER_ID": str(user_id)}
 
     def _get_default_headers(self, **kwargs):
         headers = {}
