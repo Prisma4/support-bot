@@ -50,7 +50,7 @@ ticket_list_window = Window(
                         False: Const('🔒'),
                         ...: Const('🔒'),
                     },
-                    selector="item.is_open",
+                    selector="item[is_open]",
                 ),
                 Const(' '),
                 Format('{item[name]}'),
