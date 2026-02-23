@@ -30,7 +30,7 @@ client.register_endpoint(
 )
 client.register_endpoint(
     name="get_tickets",
-    path="tickets/tickets/",
+    path="tickets/tickets/{id}",
     query_validator=PageQuery,
     response_validator=PaginatedTickets,
     method="GET"

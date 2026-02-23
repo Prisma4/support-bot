@@ -1,11 +1,11 @@
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup, Back
+from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup
 
 from handlers.handlers import switch_state_to_tickets_list, on_select_ticket, tickets_getter, on_next, on_prev, \
     switch_state_to_new_ticket, create_new_ticket, ticket_messages_getter, switch_state_to_new_message, \
-    create_new_ticket_message
+    create_new_ticket_message, switch_state_to_main, switch_state_to_view_ticket
 from states import BotStates
 from texts import Texts
 
@@ -17,7 +17,7 @@ start_window = Window(
 )
 
 tickets_select = Select(
-    text=Format("#{item[id]} {item[title]}"),
+    text=Format("{item[title]}"),
     id="ticket_select",
     items="tickets",
     item_id_getter=lambda item: str(item["id"]),
@@ -40,8 +40,9 @@ ticket_list_window = Window(
         id="tickets_scroll",
         width=1,
         height=5,
+        when="tickets",
     ),
-    Back(Const(Texts.BACK)),
+    Button(Const(Texts.BACK), id="back", on_click=switch_state_to_main),
     pager,
     state=BotStates.TICKETS_LIST,
     getter=tickets_getter,
@@ -53,7 +54,7 @@ new_ticket_window = Window(
         id="new_ticket",
         on_success=create_new_ticket,
     ),
-    Back(Const(Texts.BACK)),
+    Button(Const(Texts.BACK), id="back", on_click=switch_state_to_tickets_list),
     state=BotStates.NEW_TICKET,
 )
 
@@ -66,7 +67,7 @@ view_ticket_window = Window(
     ),
     pager,
     Button(Const(Texts.NEW_MESSAGE), id="new_message", on_click=switch_state_to_new_message, when="is_open"),
-    Back(Const(Texts.BACK)),
+    Button(Const(Texts.BACK), id="back", on_click=switch_state_to_tickets_list),
     state=BotStates.VIEW_TICKET,
     getter=ticket_messages_getter
 )
@@ -77,7 +78,7 @@ new_message_window = Window(
         id="new_message",
         on_success=create_new_ticket_message
     ),
-    Back(Const(Texts.BACK)),
+    Button(Const(Texts.BACK), id="back", on_click=switch_state_to_view_ticket),
     state=BotStates.NEW_MESSAGE,
 )
 

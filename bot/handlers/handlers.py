@@ -12,6 +12,10 @@ from states import BotStates
 PAGE_SIZE = 5
 
 
+async def switch_state_to_main(callback: CallbackQuery, button: Button, manager: DialogManager):
+    await manager.switch_to(BotStates.MAIN)
+
+
 async def switch_state_to_tickets_list(callback: CallbackQuery, button: Button, manager: DialogManager):
     await manager.switch_to(BotStates.TICKETS_LIST)
 
@@ -22,6 +26,10 @@ async def switch_state_to_new_ticket(callback: CallbackQuery, button: Button, ma
 
 async def switch_state_to_new_message(callback: CallbackQuery, button: Button, manager: DialogManager):
     await manager.switch_to(BotStates.NEW_MESSAGE)
+
+
+async def switch_state_to_view_ticket(callback: CallbackQuery, button: Button, manager: DialogManager):
+    await manager.switch_to(BotStates.TICKET)
 
 
 async def create_new_ticket(_: Any, __: Any, manager: DialogManager, ticket_name: str):
