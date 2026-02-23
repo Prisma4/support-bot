@@ -43,10 +43,11 @@ class ApiClient:
 
             path = endpoint.path
 
-            pk = query_params.get('pk')
-            if isinstance(pk, int):
-                if "{id}" in path:
-                    path = path.replace("{id}", str(pk))
+            if query_params:
+                pk = query_params.get('pk')
+                if isinstance(pk, int):
+                    if "{id}" in path:
+                        path = path.replace("{id}", str(pk))
 
             url = f"{self.base_url}/{path}"
 
