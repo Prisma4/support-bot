@@ -47,7 +47,7 @@ class TicketMessagesViewSet(GenericViewSet):
         user = self.request.user
         return TicketMessage.objects.filter(user=user).select_related('user').order_by('-created_at')
 
-    @action(methods=['post'], detail=True)
+    @action(methods=['get'], detail=True)
     def list_messages_for_ticket(self, request, pk: int):
         queryset = self.filter_queryset(self.get_queryset()).filter(ticket_id=pk)
 
@@ -99,7 +99,7 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
     queryset = TicketMessage.objects.all().select_related('user').order_by('-created_at')
     serializer_class = TicketMessageSerializer
 
-    @action(methods=['post'], detail=True)
+    @action(methods=['get'], detail=True)
     def list_messages_for_ticket(self, request, pk: int):
         queryset = self.filter_queryset(self.get_queryset()).filter(ticket_id=pk)
 
