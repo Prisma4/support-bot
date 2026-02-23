@@ -50,12 +50,14 @@ class ApiClient:
 
             url = f"{self.base_url}/{path}"
 
+            final_headers = {**self.client.headers, **(headers or {})}
+
             response = await self.client.request(
                 method=endpoint.method,
                 url=url,
                 data=validated_data.get("data"),
                 params=validated_data.get("query_params"),
-                headers=headers,
+                headers=final_headers,
                 **kwargs,
             )
 

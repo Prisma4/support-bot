@@ -11,7 +11,7 @@ settings = Settings()
 client = ApiClient(
     base_url=settings.base_api_url,
     headers={
-        "HTTP_X_TELEGRAM_BOT_API_TOKEN": str(settings.bot_api_token),
+        "X-Telegram-Bot-Api-Token": str(settings.bot_api_token),
     }
 )
 
