@@ -18,6 +18,7 @@ class TelegramBotAuthentication(authentication.BaseAuthentication):
         tg_user_id = request.META.get(self.HEADER_USER_ID)
 
         if not bot_token or not tg_user_id:
+            logger.info("Bot token or user ID missing, telegram bot authentication aborted")
             return None
 
         logger.info("Attempt to log in via Telegram Bot")
