@@ -40,6 +40,7 @@ class ApiClient:
                 **kwargs: Any,
         ) -> Any:
             validated_data = endpoint.validate_input_data(body, query_params)
+            query_params = validated_data.get('query_params')
 
             path = endpoint.path
 
@@ -57,7 +58,7 @@ class ApiClient:
                 method=endpoint.method,
                 url=url,
                 data=validated_data.get("data"),
-                params=validated_data.get("query_params"),
+                params=query_params,
                 headers=final_headers,
                 **kwargs,
             )
