@@ -10,6 +10,7 @@ x-backend-env: &backend_env
   DJANGO_DEBUG: $DJANGO_DEBUG
   POSTGRES_HOST: postgres_db
   POSTGRES_PORT: $PSQL_PORT
+  TELEGRAM_BOT_API_TOKEN: $TELEGRAM_BOT_API_TOKEN
 
 x-bot-env: &bot_env
   BOT_TOKEN: $BOT_TOKEN
