@@ -1,8 +1,12 @@
+import logging
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import authentication, exceptions
 
 User = get_user_model()
+
+logger = logging.getLogger("Authentication")
 
 
 class TelegramBotAuthentication(authentication.BaseAuthentication):
@@ -16,14 +20,25 @@ class TelegramBotAuthentication(authentication.BaseAuthentication):
         if not bot_token or not tg_user_id:
             return None
 
+        logger.info("Attempt to log in via Telegram Bot")
+
         expected = getattr(settings, "TELEGRAM_BOT_API_TOKEN", None)
+
+        logger.info(f"Bot token in settings: {bool(expected)}")
+        logger.info(f"Bot token provided in request: {bool(bot_token)}")
+
         if not expected or bot_token != expected:
             raise exceptions.AuthenticationFailed("Invalid telegram bot token")
+        else:
+            logger.info("Bot token matches")
 
         try:
             tg_user_id_int = int(tg_user_id)
         except (TypeError, ValueError):
+            logger.info("Invalid Telegram User ID")
             raise exceptions.AuthenticationFailed("Invalid telegram user id")
+
+        logger.info(f"Telegram User ID: {tg_user_id_int}")
 
         user = self._get_or_create_telegram_user(tg_user_id_int)
 
