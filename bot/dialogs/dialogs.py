@@ -43,7 +43,7 @@ ticket_list_window = Window(
     ),
     Column(
         Select(
-            text=Format(("⚙️" if "{item.get('is_open')}" else "🔒") + "{item[title]}"),
+            text=Format(("⚙️" if "{item.get('is_open', False)}" else "🔒") + "{item[title]}"),
             id="ticket_select",
             items="tickets",
             item_id_getter=lambda item: str(item["id"]),
@@ -74,7 +74,7 @@ view_ticket_window = Window(
         f"{Texts.PAGE}: {{page}}/{{pages}}\n"
     ),
     create_pager("ticket_view"),
-    Button(Const(Texts.CLOSE_TICKET), id="close_ticket", on_click=close_ticket),
+    Button(Const(Texts.CLOSE_TICKET), id="close_ticket", on_click=close_ticket, when="is_open"),
     Button(Const(Texts.NEW_MESSAGE), id="new_message", on_click=switch_state_to_new_message, when="is_open"),
     Button(Const(Texts.BACK), id="back", on_click=switch_state_to_tickets_list),
     state=BotStates.VIEW_TICKET,

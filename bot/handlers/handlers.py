@@ -97,7 +97,7 @@ async def tickets_getter(dialog_manager: DialogManager, **_):
         "count": api_page.count,
         "has_prev": api_page.previous is not None,
         "has_next": api_page.next is not None,
-        "tickets": [{"id": t.id, "title": t.name, "is_open": t.is_open} for t in api_page.results],
+        "tickets": [t.model_dump() for t in api_page.results],
     }
 
 
