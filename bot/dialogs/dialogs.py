@@ -38,8 +38,8 @@ ticket_list_window = Window(
     Column(
         tickets_select,
     ),
-    Button(Const(Texts.BACK), id="back", on_click=switch_state_to_main),
     pager,
+    Button(Const(Texts.BACK), id="back", on_click=switch_state_to_main),
     state=BotStates.TICKETS_LIST,
     getter=tickets_getter,
 )

@@ -58,14 +58,14 @@ async def on_prev(_: Any, __: Any, manager: DialogManager):
     prev_page = manager.dialog_data.get("prev_page")
     if prev_page:
         manager.dialog_data["page"] = prev_page
-    await manager.switch_to(manager.current_context().state)
+    await manager.show()
 
 
 async def on_next(_: Any, __: Any, manager: DialogManager):
     next_page = manager.dialog_data.get("next_page")
     if next_page:
         manager.dialog_data["page"] = next_page
-    await manager.switch_to(manager.current_context().state)
+    await manager.show()
 
 
 async def on_select_ticket(_: Any, __: Any, manager: DialogManager, item_id: str):
@@ -102,11 +102,16 @@ async def ticket_messages_getter(dialog_manager: DialogManager, **_):
     ticket_data: Ticket = await bot_api.get_ticket(user_id, ticket_id)
     messages_api_page: PaginatedTicketMessages = await bot_api.get_ticket_messages(user_id, ticket_id, page)
 
+    user_name = dialog_manager.event.from_user.username
+
     messages = [
-        f"{message.user.username if not message.user.is_tg_auth else f'@{message.user.telegram_user_id}'}   {parse_date(message.created_at)}\n"
+        f"{message.user.username if not message.user.telegram_user_id == user_id else f'@{user_name}'}   {parse_date(message.created_at)}\n"
         f"{message.text}\n"
         for message in messages_api_page.results
     ]
+
+    dialog_manager.dialog_data["prev_page"] = messages_api_page.previous
+    dialog_manager.dialog_data["next_page"] = messages_api_page.next
 
     return {
         "page": page,
