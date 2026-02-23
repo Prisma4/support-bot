@@ -46,16 +46,16 @@ services:
     depends_on:
       - backend
 
-#  bot_celery_worker:
-#    restart: always
-#    build:
-#      context: ./bot
-#      dockerfile: Dockerfile
-#    entrypoint: [ "sh", "-c", "celery -A celery_worker.app worker --loglevel=info --concurrency 1 -E" ]
-#    depends_on:
-#      - backend
-#    environment:
-#      <<: [ *bot_env, *celery_env ]
+  bot_celery_worker:
+    restart: always
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    entrypoint: [ "sh", "-c", "celery -A celery_worker.app worker --loglevel=info --concurrency 1 -E" ]
+    depends_on:
+      - backend
+    environment:
+      <<: [ *bot_env, *celery_env ]
 
   redis:
     restart: always

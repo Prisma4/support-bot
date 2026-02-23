@@ -6,9 +6,11 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from support_bot.celery import app
 from ticket.models import Ticket, TicketMessage, TicketStatus
 from ticket.serializers import TicketSerializer, TicketMessageSerializer, TicketCreateSerializer, \
     TicketMessageCreateSerializer
+from user.models import AuthSource
 
 
 class TicketsViewSet(mixins.ListModelMixin,
@@ -121,5 +123,10 @@ class StaffTicketMessagesViewSet(mixins.RetrieveModelMixin,
         ticket.status = TicketStatus.IN_PROGRESS
         ticket.processed_by.add(request.user)
         ticket.save()
+
+        user_telegram_id = obj.user.telegram_user_id
+        if user_telegram_id and obj.user.auth_source == AuthSource.TELEGRAM:
+            ticket_name = ticket.name
+            app.send_task("bot.send_message", args=[user_telegram_id, f"You have a new answer in ticket {ticket_name}"])
 
         return Response(self.get_serializer(obj).data, status=status.HTTP_201_CREATED)
