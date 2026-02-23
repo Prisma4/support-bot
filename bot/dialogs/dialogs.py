@@ -16,14 +16,6 @@ start_window = Window(
     state=BotStates.MAIN,
 )
 
-tickets_select = Select(
-    text=Format("{item[title]}"),
-    id="ticket_select",
-    items="tickets",
-    item_id_getter=lambda item: str(item["id"]),
-    on_click=on_select_ticket,
-)
-
 pager = Row(
     Button(Format(Texts.PREV), id="prev", on_click=on_prev, when="has_prev"),
     Button(Format(Texts.NEXT), id="next", on_click=on_next, when="has_next"),
@@ -36,7 +28,13 @@ ticket_list_window = Window(
         f"{Texts.PAGE}: {{page}}/{{pages}}\n"
     ),
     Column(
-        tickets_select,
+        Select(
+            text=Format("{item[title]}"),
+            id="ticket_select",
+            items="tickets",
+            item_id_getter=lambda item: str(item["id"]),
+            on_click=on_select_ticket,
+        ),
     ),
     pager,
     Button(Const(Texts.BACK), id="back", on_click=switch_state_to_main),
