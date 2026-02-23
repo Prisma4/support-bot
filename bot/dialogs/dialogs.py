@@ -52,7 +52,7 @@ ticket_list_window = Window(
                     selector=lambda data, widget, manager: bool(data.get('item', {}).get('is_open', False)),
                 ),
                 Const(' '),
-                Format('{item.name}'),
+                Format('{item[name]}'),
             ),
             id="ticket_select",
             items="tickets",
