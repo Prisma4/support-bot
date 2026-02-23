@@ -1,3 +1,4 @@
+from json import JSONDecodeError
 from typing import Dict, Type, Optional, Any, Literal
 
 import httpx
@@ -64,7 +65,13 @@ class ApiClient:
             )
 
             response.raise_for_status()
-            validated_response = endpoint.validate_output_data(response.json())
+
+            try:
+                response = response.json()
+            except JSONDecodeError:
+                response = {}
+
+            validated_response = endpoint.validate_output_data(response)
 
             return validated_response
 
