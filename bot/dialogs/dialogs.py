@@ -7,7 +7,8 @@ from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup, Colu
 
 from handlers.handlers import switch_state_to_tickets_list, on_select_ticket, tickets_getter, \
     switch_state_to_new_ticket, create_new_ticket, ticket_messages_getter, switch_state_to_new_message, \
-    create_new_ticket_message, switch_state_to_main, switch_state_to_view_ticket, create_pagination_handlers
+    create_new_ticket_message, switch_state_to_main, switch_state_to_view_ticket, create_pagination_handlers, \
+    close_ticket
 from states import BotStates
 from texts import Texts
 
@@ -73,7 +74,7 @@ view_ticket_window = Window(
         f"{Texts.PAGE}: {{page}}/{{pages}}\n"
     ),
     create_pager("ticket_view"),
-    Button(Const(Texts.CLOSE_TICKET), id="close_ticket", on_click=...),
+    Button(Const(Texts.CLOSE_TICKET), id="close_ticket", on_click=close_ticket),
     Button(Const(Texts.NEW_MESSAGE), id="new_message", on_click=switch_state_to_new_message, when="is_open"),
     Button(Const(Texts.BACK), id="back", on_click=switch_state_to_tickets_list),
     state=BotStates.VIEW_TICKET,
