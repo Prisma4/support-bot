@@ -45,7 +45,7 @@ class ApiClient:
             path = endpoint.path
 
             if query_params:
-                pk = query_params.get('pk')
+                pk = query_params.pop('pk')
                 if isinstance(pk, int):
                     if "{id}" in path:
                         path = path.replace("{id}", str(pk))

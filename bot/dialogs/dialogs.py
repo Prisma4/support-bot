@@ -1,11 +1,13 @@
+from typing import Optional
+
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup, Column
 
-from handlers.handlers import switch_state_to_tickets_list, on_select_ticket, tickets_getter, on_next, on_prev, \
+from handlers.handlers import switch_state_to_tickets_list, on_select_ticket, tickets_getter, \
     switch_state_to_new_ticket, create_new_ticket, ticket_messages_getter, switch_state_to_new_message, \
-    create_new_ticket_message, switch_state_to_main, switch_state_to_view_ticket
+    create_new_ticket_message, switch_state_to_main, switch_state_to_view_ticket, create_pagination_handlers
 from states import BotStates
 from texts import Texts
 
@@ -16,10 +18,21 @@ start_window = Window(
     state=BotStates.MAIN,
 )
 
-pager = Row(
-    Button(Format(Texts.PREV), id="prev", on_click=on_prev, when="has_prev"),
-    Button(Format(Texts.NEXT), id="next", on_click=on_next, when="has_next"),
-)
+
+def create_pager(
+        prefix: str,
+        previous_field: Optional[str] = "has_prev",
+        next_field: [str] = "has_next"
+):
+    on_prev, on_next = create_pagination_handlers(prefix)
+
+    pager = Row(
+        Button(Format(Texts.PREV), id="prev", on_click=on_prev, when=previous_field),
+        Button(Format(Texts.NEXT), id="next", on_click=on_next, when=next_field),
+    )
+
+    return pager
+
 
 ticket_list_window = Window(
     Format(
@@ -36,7 +49,7 @@ ticket_list_window = Window(
             on_click=on_select_ticket,
         ),
     ),
-    pager,
+    create_pager("tickets_list"),
     Button(Const(Texts.BACK), id="back", on_click=switch_state_to_main),
     state=BotStates.TICKETS_LIST,
     getter=tickets_getter,
@@ -59,7 +72,7 @@ view_ticket_window = Window(
         f"{{messages}}\n"
         f"{Texts.PAGE}: {{page}}/{{pages}}\n"
     ),
-    pager,
+    create_pager("ticket_view"),
     Button(Const(Texts.NEW_MESSAGE), id="new_message", on_click=switch_state_to_new_message, when="is_open"),
     Button(Const(Texts.BACK), id="back", on_click=switch_state_to_tickets_list),
     state=BotStates.VIEW_TICKET,

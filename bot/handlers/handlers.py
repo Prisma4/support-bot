@@ -54,16 +54,20 @@ async def create_new_ticket_message(_: Any, __: Any, manager: DialogManager, mes
     await manager.switch_to(BotStates.VIEW_TICKET)
 
 
-async def on_prev(_: Any, __: Any, manager: DialogManager):
-    page = int(manager.dialog_data.get("page", 1))
-    manager.dialog_data["page"] = max(1, page - 1)
-    await manager.show()
+def create_pagination_handlers(prefix: str):
+    async def on_prev(_, __, manager: DialogManager):
+        key = f"{prefix}_page"
+        page = int(manager.dialog_data.get(key, 1))
+        manager.dialog_data[key] = max(1, page - 1)
+        await manager.show()
 
+    async def on_next(_, __, manager: DialogManager):
+        key = f"{prefix}_page"
+        page = int(manager.dialog_data.get(key, 1))
+        manager.dialog_data[key] = page + 1
+        await manager.show()
 
-async def on_next(_: Any, __: Any, manager: DialogManager):
-    page = int(manager.dialog_data.get("page", 1))
-    manager.dialog_data["page"] = page + 1
-    await manager.show()
+    return on_prev, on_next
 
 
 async def on_select_ticket(_: Any, __: Any, manager: DialogManager, item_id: str):
@@ -77,9 +81,6 @@ async def tickets_getter(dialog_manager: DialogManager, **_):
     user_id = dialog_manager.event.from_user.id
 
     api_page: PaginatedTickets = await bot_api.get_tickets(user_id, page)
-
-    dialog_manager.dialog_data["prev_page"] = api_page.previous
-    dialog_manager.dialog_data["next_page"] = api_page.next
 
     return {
         "page": page,
@@ -109,9 +110,6 @@ async def ticket_messages_getter(dialog_manager: DialogManager, **_):
         f"{message.text}\n"
         for message in messages_api_page.results
     ]
-
-    dialog_manager.dialog_data["prev_page"] = messages_api_page.previous
-    dialog_manager.dialog_data["next_page"] = messages_api_page.next
 
     return {
         "page": page,
