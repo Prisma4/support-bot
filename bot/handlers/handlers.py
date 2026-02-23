@@ -76,7 +76,7 @@ async def on_select_ticket(_: Any, __: Any, manager: DialogManager, item_id: str
 
 
 async def tickets_getter(dialog_manager: DialogManager, **_):
-    page = int(dialog_manager.dialog_data.get("page", 1))
+    page = int(dialog_manager.dialog_data.get("tickets_list_page", 1))
 
     user_id = dialog_manager.event.from_user.id
 
@@ -93,7 +93,7 @@ async def tickets_getter(dialog_manager: DialogManager, **_):
 
 
 async def ticket_messages_getter(dialog_manager: DialogManager, **_):
-    page = int(dialog_manager.dialog_data.get("page", 1))
+    page = int(dialog_manager.dialog_data.get("ticket_view_page", 1))
 
     user_id = dialog_manager.event.from_user.id
     ticket_id = dialog_manager.dialog_data["ticket_id"]
