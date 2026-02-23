@@ -2,7 +2,7 @@ from typing import Optional
 
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import TextInput
-from aiogram_dialog.widgets.text import Const, Format
+from aiogram_dialog.widgets.text import Const, Format, Multi, Case
 from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup, Column
 
 from handlers.handlers import switch_state_to_tickets_list, on_select_ticket, tickets_getter, \
@@ -43,7 +43,18 @@ ticket_list_window = Window(
     ),
     Column(
         Select(
-            text=Format("{'⚙️' if item[is_open] else '🔒'} {item[name]}"),
+            text=Multi(
+                Case(
+                    texts={
+                        True: Const('⚙️'),
+                        False: Const('🔒'),
+                        ...: Const('🔒'),
+                    },
+                    selector="item.is_open",
+                ),
+                Const(' '),
+                Format('{item.name}'),
+            ),
             id="ticket_select",
             items="tickets",
             item_id_getter=lambda item: str(item["id"]),
