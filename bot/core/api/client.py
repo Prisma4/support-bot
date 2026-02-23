@@ -40,7 +40,7 @@ class ApiClient:
                 **kwargs: Any,
         ) -> Any:
             validated_data = endpoint.validate_input_data(body, query_params)
-            query_params = validated_data.get('query_params')
+            query_params = validated_data.get('params')
 
             path = endpoint.path
 
