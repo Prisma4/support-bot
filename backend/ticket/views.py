@@ -12,6 +12,7 @@ from ticket.serializers import TicketSerializer, TicketMessageSerializer, Ticket
 
 
 class TicketsViewSet(mixins.ListModelMixin,
+                     mixins.RetrieveModelMixin,
                      GenericViewSet):
     permission_classes = [IsAuthenticated, ]
     serializer_class = TicketSerializer

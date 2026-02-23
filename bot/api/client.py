@@ -2,7 +2,7 @@ from api.bot_api import BotApi
 from core.api.client import ApiClient
 from api.models import PageQuery, PaginatedRetrieveQuery, PaginatedTicketMessages, CreateTicketMessage, \
     PaginatedTickets, \
-    CreateTicket, RetrieveQuery
+    CreateTicket, RetrieveQuery, CreatedObject, Ticket
 
 from settings import Settings
 
@@ -39,6 +39,14 @@ client.register_endpoint(
     name="create_ticket",
     path="tickets/tickets/",
     body_validator=CreateTicket,
+    response_validator=CreatedObject,
+    method="POST"
+)
+client.register_endpoint(
+    name="get_ticket",
+    path="tickets/tickets/",
+    query_validator=RetrieveQuery,
+    response_validator=Ticket,
     method="POST"
 )
 client.register_endpoint(

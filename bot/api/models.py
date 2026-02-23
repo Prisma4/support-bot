@@ -17,6 +17,7 @@ class PaginatedRetrieveQuery(PageQuery, RetrieveQuery):
 
 class PaginatedPage(BaseModel):
     count: int
+    max_pages: int
     next: Optional[int] = None
     previous: Optional[int] = None
 
@@ -47,6 +48,7 @@ class Ticket(BaseModel):
     processed_by: List[User]
     name: str
     status: int
+    is_open: bool
 
     created_at: str
     updated_at: str
@@ -63,3 +65,7 @@ class CreateTicketMessage(BaseModel):
 
 class CreateTicket(BaseModel):
     name: str
+
+
+class CreatedObject(BaseModel):
+    id: int

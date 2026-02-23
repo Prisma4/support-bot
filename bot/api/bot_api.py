@@ -29,7 +29,16 @@ class BotApi:
         method = self._get_client_method("get_ticket_messages")
         return await method(headers=headers, query_params=query_params)
 
-    async def create_ticket_message(self, user_id: int, text: str, ticket_id: int):
+    async def get_ticket(self, user_id: int, ticket_id: int):
+        headers = self._get_default_headers(user_id=user_id)
+        query_params = {
+            "pk": ticket_id
+        }
+
+        method = self._get_client_method("get_ticket")
+        return await method(headers=headers, query_params=query_params)
+
+    async def create_ticket_message(self, user_id: int, ticket_id: int, text: str):
         headers = self._get_default_headers(user_id=user_id)
         body = {
             "text": text,

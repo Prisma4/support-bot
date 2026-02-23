@@ -6,4 +6,5 @@ class BotStates(StatesGroup):
     TICKETS_LIST = State()
     TICKET = State()
     NEW_TICKET = State()
+    VIEW_TICKET = State()
     NEW_MESSAGE = State()

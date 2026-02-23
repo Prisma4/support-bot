@@ -18,17 +18,15 @@ class Endpoint:
         self.response_validator = response_validator
         self.method = method
 
-    def _validate_input_body(self, data: dict) -> dict:
-        if self.body_validator:
-            return self.body_validator(**data).model_dump()
-        else:
-            return data
+    def _validate_input_body(self, data: dict) -> Optional[dict]:
+        if not self.body_validator:
+            return
+        return self.body_validator(**data).model_dump()
 
-    def _validate_query_params(self, data: dict) -> dict:
-        if self.query_validator:
-            return self.query_validator(**data).model_dump()
-        else:
-            return data
+    def _validate_query_params(self, data: dict) -> Optional[dict]:
+        if not self.query_validator:
+            return
+        return self.query_validator(**data).model_dump()
 
     def validate_input_data(self, body: dict, query_params: dict) -> dict:
         validated_body = self._validate_input_body(body)
@@ -38,9 +36,9 @@ class Endpoint:
             "params": validated_query_params
         }
 
-    def validate_output_data(self, data: Union[dict, list]) -> Union[BaseModel, list]:
+    def validate_output_data(self, data: Union[dict, list]) -> Optional[Union[BaseModel, list]]:
         if self.response_validator is None:
-            return data
+            return
 
         if isinstance(data, dict):
             return self.response_validator(**data)

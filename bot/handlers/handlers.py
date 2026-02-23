@@ -5,13 +5,45 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.widgets.kbd import Button, Select
 
 from api.client import bot_api
+from api.models import CreatedObject, PaginatedTickets, PaginatedTicketMessages, Ticket
+from core.utils.utils import date_to_ddmmyy
 from states import BotStates
 
 PAGE_SIZE = 5
 
 
-async def switch_state_to_tickets(callback: CallbackQuery, button: Button, manager: DialogManager):
+async def switch_state_to_tickets_list(callback: CallbackQuery, button: Button, manager: DialogManager):
     await manager.switch_to(BotStates.TICKETS_LIST)
+
+
+async def switch_state_to_new_ticket(callback: CallbackQuery, button: Button, manager: DialogManager):
+    await manager.switch_to(BotStates.NEW_TICKET)
+
+
+async def switch_state_to_new_message(callback: CallbackQuery, button: Button, manager: DialogManager):
+    await manager.switch_to(BotStates.NEW_MESSAGE)
+
+
+async def create_new_ticket(_: Any, __: Any, manager: DialogManager, ticket_name: str):
+    ticket_name = ticket_name.strip()
+    user_id = manager.event.from_user.id
+
+    response: CreatedObject = await bot_api.create_ticket(user_id, ticket_name)
+    ticket_id = response.id
+    manager.dialog_data["ticket_id"] = ticket_id
+
+    await manager.switch_to(BotStates.VIEW_TICKET)
+
+
+async def create_new_ticket_message(_: Any, __: Any, manager: DialogManager, message_text: str):
+    message_text = message_text.strip()
+    user_id = manager.event.from_user.id
+
+    ticket_id = manager.dialog_data["ticket_id"]
+
+    response: CreatedObject = await bot_api.create_ticket_message(user_id, ticket_id, message_text)
+
+    await manager.switch_to(BotStates.VIEW_TICKET)
 
 
 async def on_prev(_: Any, __: Any, manager: DialogManager):
@@ -35,18 +67,43 @@ async def tickets_getter(dialog_manager: DialogManager, **_):
 
     user_id = dialog_manager.event.from_user.id
 
-    api_page = await bot_api.get_tickets(user_id, page)
+    api_page: PaginatedTickets = await bot_api.get_tickets(user_id, page)
 
     dialog_manager.dialog_data["prev_page"] = api_page.previous
     dialog_manager.dialog_data["next_page"] = api_page.next
 
-    pages = max(1, (api_page.count + PAGE_SIZE - 1) // PAGE_SIZE)
-
     return {
         "page": page,
-        "pages": pages,
+        "pages": api_page.max_pages,
         "count": api_page.count,
         "has_prev": api_page.previous is not None,
         "has_next": api_page.next is not None,
         "tickets": [{"id": t.id, "title": t.name} for t in api_page.results],
+    }
+
+
+async def ticket_messages_getter(dialog_manager: DialogManager, **_):
+    page = int(dialog_manager.dialog_data.get("page", 1))
+
+    user_id = dialog_manager.event.from_user.id
+    ticket_id = dialog_manager.dialog_data["ticket_id"]
+
+    ticket_data: Ticket = await bot_api.get_ticket(user_id, ticket_id)
+    messages_api_page: PaginatedTicketMessages = await bot_api.get_ticket_messages(user_id, ticket_id, page)
+
+    messages = [
+        f"{message.user.username}   {date_to_ddmmyy(message.created_at)}\n"
+        f"{message.text}\n"
+        for message in messages_api_page.results
+    ]
+
+    return {
+        "page": page,
+        "pages": messages_api_page.max_pages,
+        "count": messages_api_page.count,
+        "has_prev": messages_api_page.previous is not None,
+        "has_next": messages_api_page.next is not None,
+        "name": ticket_data.name,
+        "is_open": ticket_data.is_open,
+        "messages": "\n".join(messages)
     }

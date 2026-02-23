@@ -7,15 +7,28 @@ from user.serializers import UserSerializer
 class TicketSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     processed_by = UserSerializer(read_only=True, many=True)
+    is_open = serializers.SerializerMethodField()
 
     class Meta:
         model = Ticket
-        fields = '__all__'
+        fields = (
+            "id",
+            "user",
+            "status",
+            "processed_by",
+            "name",
+            "created_at",
+            "updated_at",
+            "is_open"
+        )
         read_only_fields = (
             "user",
             "status",
             "processed_by"
         )
+
+    def get_is_open(self, obj):
+        return obj.status != TicketStatus.CLOSED
 
 
 class TicketCreateSerializer(serializers.ModelSerializer):

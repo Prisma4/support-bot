@@ -1,14 +1,18 @@
 from aiogram_dialog import Dialog, Window
+from aiogram_dialog.widgets.input import TextInput
 from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup
+from aiogram_dialog.widgets.kbd import Button, Row, Select, ScrollingGroup, Back
 
-from handlers.handlers import switch_state_to_tickets, on_select_ticket, tickets_getter, on_next, on_prev
+from handlers.handlers import switch_state_to_tickets_list, on_select_ticket, tickets_getter, on_next, on_prev, \
+    switch_state_to_new_ticket, create_new_ticket, ticket_messages_getter, switch_state_to_new_message, \
+    create_new_ticket_message
 from states import BotStates
 from texts import Texts
 
 start_window = Window(
     Const(Texts.WELCOME),
-    Button(Const(Texts.VIEW_TICKETS), id="my_tickets", on_click=switch_state_to_tickets),
+    Button(Const(Texts.NEW_TICKET), id="new_ticket", on_click=switch_state_to_new_ticket),
+    Button(Const(Texts.VIEW_TICKETS), id="my_tickets", on_click=switch_state_to_tickets_list),
     state=BotStates.MAIN,
 )
 
@@ -37,9 +41,50 @@ ticket_list_window = Window(
         width=1,
         height=5,
     ),
+    Back(Const(Texts.BACK)),
     pager,
     state=BotStates.TICKETS_LIST,
     getter=tickets_getter,
 )
 
-dialog = Dialog(start_window, ticket_list_window)
+new_ticket_window = Window(
+    Const(Texts.ENTER_TICKET_NAME),
+    TextInput(
+        id="new_ticket",
+        on_success=create_new_ticket,
+    ),
+    Back(Const(Texts.BACK)),
+    state=BotStates.NEW_TICKET,
+)
+
+view_ticket_window = Window(
+    Format(
+        f"{Texts.TICKET_NAME}: {{name}}\n"
+        f"{Texts.MESSAGE_HISTORY}: \n\n"
+        f"{{messages}}\n"
+        f"{Texts.PAGE}: {{page}}/{{pages}}\n"
+    ),
+    pager,
+    Button(Const(Texts.NEW_MESSAGE), id="new_message", on_click=switch_state_to_new_message, when="is_open"),
+    Back(Const(Texts.BACK)),
+    state=BotStates.VIEW_TICKET,
+    getter=ticket_messages_getter
+)
+
+new_message_window = Window(
+    Const(Texts.ENTER_MESSAGE_TEXT),
+    TextInput(
+        id="new_message",
+        on_success=create_new_ticket_message
+    ),
+    Back(Const(Texts.BACK)),
+    state=BotStates.NEW_MESSAGE,
+)
+
+dialog = Dialog(
+    start_window,
+    ticket_list_window,
+    new_ticket_window,
+    view_ticket_window,
+    new_message_window,
+)
