@@ -14,7 +14,7 @@ x-backend-env: &backend_env
 x-bot-env: &bot_env
   BOT_TOKEN: $BOT_TOKEN
   BASE_API_URL: $BASE_API_URL
-  BOT_API_TOKEN: $BOT_API_AUTH_TOKEN
+  BOT_API_TOKEN: $TELEGRAM_BOT_API_TOKEN
 
 x-celery-env: &celery_env
   CELERY_BROKER_URL: $CELERY_BROKER_URL
