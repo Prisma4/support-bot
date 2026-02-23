@@ -53,7 +53,7 @@ ticket_list_window = Window(
                     selector="item.is_open",
                 ),
                 Const(' '),
-                Format('{item.name}'),
+                Format('{item[name]}'),
             ),
             id="ticket_select",
             items="tickets",
