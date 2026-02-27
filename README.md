@@ -10,7 +10,7 @@ Used technologies:
 - `uv`
 - `redis`
 - `celery`
-gi
+
 ___
 ### Quick start
 
